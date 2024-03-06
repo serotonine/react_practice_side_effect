@@ -1,8 +1,11 @@
 import { useState } from "react";
 import QUESTIONS from "../questions.js";
 import quizComplete from "../assets/quiz-complete.png";
+import QuestionTimer from "./QuestionTimer.jsx";
 
 export default function Quiz({}) {
+  // Timeout value.
+  const _TIMEOUT = 1000;
   // Stock answers.
   const [userAnswers, setUserAnswers] = useState([]);
   // Number of user answers === index of answers array (QUESTIONS[activeQuestionIndex].answers).
@@ -19,6 +22,7 @@ export default function Quiz({}) {
   function handleSelectAnswer(answer) {
     setUserAnswers((prevUserAnswers) => [...prevUserAnswers, answer]);
   }
+
   {
     if (quizIsComplete) {
       return (
@@ -32,6 +36,10 @@ export default function Quiz({}) {
   return (
     <div id="quiz">
       <div id="question">
+        <QuestionTimer
+          timeOut={_TIMEOUT}
+          onTimeOut={() => handleSelectAnswer(null)}
+        />
         <h2>{QUESTIONS[activeQuestionIndex].text}</h2>
         <ul id="answers">
           {shuffleAnswers.map((answer) => (
