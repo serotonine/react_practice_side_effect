@@ -5,7 +5,7 @@ import QuestionTimer from "./QuestionTimer.jsx";
 
 export default function Quiz({}) {
   // Timeout value.
-  const _TIMEOUT = 1000;
+  const _TIMEOUT = 10000;
   // Stock answers.
   const [userAnswers, setUserAnswers] = useState([]);
   // Number of user answers === index of answers array (QUESTIONS[activeQuestionIndex].answers).
@@ -33,6 +33,7 @@ export default function Quiz({}) {
   );
 
   if (quizIsComplete) {
+    console.log("QUIZ COMPLETE", userAnswers);
     return (
       <div id="summary">
         <img src={quizComplete} alt="Quiz is complete" />
@@ -43,7 +44,11 @@ export default function Quiz({}) {
   return (
     <div id="quiz">
       <div id="question">
-        <QuestionTimer timeOut={_TIMEOUT} onTimeOut={handleSkipSelectAnswer} />
+        <QuestionTimer
+          key={activeQuestionIndex}
+          timeOut={_TIMEOUT}
+          onTimeOut={handleSkipSelectAnswer}
+        />
         <h2>{QUESTIONS[activeQuestionIndex].text}</h2>
         <ul id="answers">
           {shuffleAnswers.map((answer) => (
