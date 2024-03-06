@@ -1,26 +1,61 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import QUESTIONS from "../questions.js";
+import completeImg from "../assets/quiz-complete.png";
+import Question from "./Question.jsx";
 
-export default function Quiz({}) {
+export default function Quiz({) {
   const [userAnswers, setUserAnswers] = useState([]);
-  const activeQuestionIndex = userAnswers.length;
-  function handleSelectAnswer(answer) {
-    setUserAnswers((prevUserAnswers) => [...prevUserAnswers, answer]);
+  // Manage bg color state classes.
+  const [answerState, setAnswerState] = useState("");
+  const activeQuestionIndex =
+    answerState === "" ? userAnswers.length : userAnswers.length - 1;
+  // Check the Quiz is over when userAnswers.lenght === questions.lenght.
+  const quizIsComplete = activeQuestionIndex === QUESTIONS.length;
+
+  const handleSelectAnswer = useCallback(
+    function handleSelectAnswer(answer) {
+      setAnswerState("answered");
+      setUserAnswers((prevUserAnswers) => [...prevUserAnswers, answer]);
+      // Let's go for cumbersome code.
+      setTimeout(() => {
+        if (answer === QUESTIONS[activeQuestionIndex].answers[0]) {
+          setAnswerState("correct");
+        } else {
+          setAnswerState("wrong");
+        }
+        setTimeout(() => {
+          setAnswerState("");
+        }, 2000);
+      }, 1000);
+    },
+    [activeQuestionIndex]
+  );
+
+  const handleSkipAnswer = useCallback(() => {
+    console.log("handleSkipAnswer");
+    handleSelectAnswer(null);
+  }, [handleSelectAnswer]);
+  if (quizIsComplete) {
+    console.log("quizIsComplete", userAnswers);
+    return (
+      <div id="summary">
+        <img src={completeImg} alt="Quiz completed" />
+        <h2>Quiz completed!</h2>
+      </div>
+    );
   }
+
   return (
     <div id="quiz">
-      <div id="question">
-        <h2>{QUESTIONS[activeQuestionIndex].text}</h2>
-        <ul id="answers">
-          {QUESTIONS[activeQuestionIndex].answers.map((answer) => (
-            <li key={answer} className="answer">
-              <button onClick={() => handleSelectAnswer(answer)}>
-                {answer}
-              </button>
-            </li>
-          ))}
-        </ul>
-      </div>
+      <Question
+        key={activeQuestionIndex}
+        questionText={QUESTIONS[activeQuestionIndex].text}
+        answers={QUESTIONS[activeQuestionIndex].answers}
+        selectedAnswer={userAnswers[userAnswers.length - 1]}
+        answerState={answerState}
+        onSelect={handleSelectAnswer}
+        onSkipAnswer={handleSkipAnswer}
+      />
     </div>
   );
 }
