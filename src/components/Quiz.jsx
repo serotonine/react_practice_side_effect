@@ -8,8 +8,16 @@ export default function Quiz({}) {
   const _TIMEOUT = 10000;
   // Stock answers.
   const [userAnswers, setUserAnswers] = useState([]);
+  // Awful correct/wrong answer.
+  const [answerState, setAnswerState] = useState("");
+  function isCorrectAnswer(selectedAnswer, index) {
+    console.log("isCorrectAnswer", selectedAnswer);
+    const isCorrect = selectedAnswer === QUESTIONS[index].answers[0];
+    isCorrect ? setAnswerState("correct") : setAnswerState("wrong");
+  }
   // Number of user answers === index of answers array (QUESTIONS[activeQuestionIndex].answers).
-  const activeQuestionIndex = userAnswers.length;
+  const activeQuestionIndex =
+    answerState === "" ? userAnswers.length : userAnswers.length - 1;
   // Get Complete Quiz.
   const quizIsComplete = userAnswers.length === QUESTIONS.length;
   let shuffleAnswers;
@@ -24,9 +32,20 @@ export default function Quiz({}) {
    *  Call useCallback to cache a function definition between re-renders
    * This way the function is not re-referenced.
    */
-  const handleSelectAnswer = useCallback(function handleSelectAnswer(answer) {
-    setUserAnswers((prevUserAnswers) => [...prevUserAnswers, answer]);
-  }, []);
+  const handleSelectAnswer = useCallback(
+    function handleSelectAnswer(answer) {
+      setAnswerState("answered");
+      setUserAnswers((prevUserAnswers) => [...prevUserAnswers, answer]);
+      // Awful correct/wrong.
+      setTimeout(() => {
+        isCorrectAnswer(answer, activeQuestionIndex);
+        // Re-init
+        setTimeout(() => setAnswerState(""), 2000);
+      }, 1000);
+    },
+    [activeQuestionIndex]
+  );
+
   const handleSkipSelectAnswer = useCallback(
     () => handleSelectAnswer(null),
     [handleSelectAnswer]
@@ -51,13 +70,30 @@ export default function Quiz({}) {
         />
         <h2>{QUESTIONS[activeQuestionIndex].text}</h2>
         <ul id="answers">
-          {shuffleAnswers.map((answer) => (
-            <li key={answer} className="answer">
-              <button onClick={() => handleSelectAnswer(answer)}>
-                {answer}
-              </button>
-            </li>
-          ))}
+          {shuffleAnswers.map((answer) => {
+            // Awful correct/wrong stuff.
+            const isSelected = userAnswers[userAnswers.length - 1] === answer;
+            let cssClass = "";
+            if (answerState === "answered" && isSelected) {
+              cssClass = "selected";
+            }
+            if (
+              answerState === "correct" ||
+              (answerState === "wrong" && isSelected)
+            ) {
+              cssClass = answerState;
+            }
+            return (
+              <li key={answer} className="answer">
+                <button
+                  className={cssClass}
+                  onClick={() => handleSelectAnswer(answer)}
+                >
+                  {answer}
+                </button>
+              </li>
+            );
+          })}
         </ul>
       </div>
     </div>
