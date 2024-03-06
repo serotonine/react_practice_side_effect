@@ -9,15 +9,13 @@ export default function Quiz({}) {
   // Stock answers.
   const [userAnswers, setUserAnswers] = useState([]);
   // Awful correct/wrong answer.
-  const [answerState, setAnswerState] = useState("");
   function isCorrectAnswer(selectedAnswer, index) {
-    console.log("isCorrectAnswer", selectedAnswer);
     const isCorrect = selectedAnswer === QUESTIONS[index].answers[0];
     isCorrect ? setAnswerState("correct") : setAnswerState("wrong");
   }
+
   // Number of user answers === index of answers array (QUESTIONS[activeQuestionIndex].answers).
-  const activeQuestionIndex =
-    answerState === "" ? userAnswers.length : userAnswers.length - 1;
+  const activeQuestionIndex = userAnswers.length;
   // Get Complete Quiz.
   const quizIsComplete = userAnswers.length === QUESTIONS.length;
 
@@ -25,19 +23,9 @@ export default function Quiz({}) {
    *  Call useCallback to cache a function definition between re-renders
    * This way the function is not re-referenced.
    */
-  const handleSelectAnswer = useCallback(
-    function handleSelectAnswer(answer) {
-      setAnswerState("answered");
-      setUserAnswers((prevUserAnswers) => [...prevUserAnswers, answer]);
-      // Awful correct/wrong.
-      setTimeout(() => {
-        isCorrectAnswer(answer, activeQuestionIndex);
-        // Re-init
-        setTimeout(() => setAnswerState(""), 2000);
-      }, 1000);
-    },
-    [activeQuestionIndex]
-  );
+  const handleSelectAnswer = useCallback(function handleSelectAnswer(answer) {
+    setUserAnswers((prevUserAnswers) => [...prevUserAnswers, answer]);
+  }, []);
 
   const handleSkipSelectAnswer = useCallback(
     () => handleSelectAnswer(null),
@@ -45,6 +33,7 @@ export default function Quiz({}) {
   );
 
   if (quizIsComplete) {
+    console.log("User answers", userAnswers);
     return (
       <div id="summary">
         <img src={quizComplete} alt="Quiz is complete" />
@@ -57,10 +46,7 @@ export default function Quiz({}) {
     <div id="quiz">
       <Question
         key={activeQuestionIndex}
-        title={QUESTIONS[activeQuestionIndex].text}
-        answers={QUESTIONS[activeQuestionIndex].answers}
-        selectedAnswer={userAnswers[userAnswers.length - 1]}
-        answerState={answerState}
+        index={activeQuestionIndex}
         onSelectAnswer={handleSelectAnswer}
         timeOut={_TIMEOUT}
         onSkipAnswer={handleSkipSelectAnswer}
