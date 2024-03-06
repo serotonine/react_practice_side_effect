@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import QUESTIONS from "../questions.js";
 import quizComplete from "../assets/quiz-complete.png";
 import QuestionTimer from "./QuestionTimer.jsx";
@@ -19,27 +19,31 @@ export default function Quiz({}) {
     // Shuffle it.
     shuffleAnswers.sort(() => Math.random() - 0.5);
   }
-  function handleSelectAnswer(answer) {
-    setUserAnswers((prevUserAnswers) => [...prevUserAnswers, answer]);
-  }
 
-  {
-    if (quizIsComplete) {
-      return (
-        <div id="summary">
-          <img src={quizComplete} alt="Quiz is complete" />
-          <h2>Quiz completed !</h2>
-        </div>
-      );
-    }
+  /*
+   *  Call useCallback to cache a function definition between re-renders
+   * This way the function is not re-referenced.
+   */
+  const handleSelectAnswer = useCallback(function handleSelectAnswer(answer) {
+    setUserAnswers((prevUserAnswers) => [...prevUserAnswers, answer]);
+  }, []);
+  const handleSkipSelectAnswer = useCallback(
+    () => handleSelectAnswer(null),
+    [handleSelectAnswer]
+  );
+
+  if (quizIsComplete) {
+    return (
+      <div id="summary">
+        <img src={quizComplete} alt="Quiz is complete" />
+        <h2>Quiz completed !</h2>
+      </div>
+    );
   }
   return (
     <div id="quiz">
       <div id="question">
-        <QuestionTimer
-          timeOut={_TIMEOUT}
-          onTimeOut={() => handleSelectAnswer(null)}
-        />
+        <QuestionTimer timeOut={_TIMEOUT} onTimeOut={handleSkipSelectAnswer} />
         <h2>{QUESTIONS[activeQuestionIndex].text}</h2>
         <ul id="answers">
           {shuffleAnswers.map((answer) => (
