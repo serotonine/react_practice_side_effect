@@ -13,6 +13,16 @@ export default function Question({
     selectedAnswer: "",
     isCorrect: null,
   });
+  // Avoid the timer expire even if an answer was selected.
+  let timer = timeOut;
+  const timerSelectedAnswer = 1000;
+  const timerIsCorrect = 2000;
+  if (answer.selectedAnswer) {
+    timer = timerSelectedAnswer;
+  }
+  if (answer.isCorrect !== null) {
+    timer = timerIsCorrect;
+  }
   function handleSelectAnswer(answer) {
     console.log(answer);
     setAnswer({
@@ -24,8 +34,8 @@ export default function Question({
         selectedAnswer: answer,
         isCorrect: QUESTIONS[index].answers[0] === answer,
       });
-      setTimeout(() => onSelectAnswer(answer), 1000);
-    }, 500);
+      setTimeout(() => onSelectAnswer(answer), timerIsCorrect);
+    }, timerSelectedAnswer);
   }
   let answerState = "";
   if (answer.selectedAnswer && answer.isCorrect !== null) {
@@ -35,7 +45,12 @@ export default function Question({
   }
   return (
     <div id="question">
-      <QuestionTimer timeOut={timeOut} onTimeOut={onSkipAnswer} />
+      <QuestionTimer
+        key={timer}
+        timeOut={timer}
+        onTimeOut={answer.onSelectAnswer === "" ? onSkipAnswer : null}
+        mode={answerState}
+      />
       <h2>{QUESTIONS[index].text}</h2>
       <Answers
         answers={QUESTIONS[index].answers}
