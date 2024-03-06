@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import QUESTIONS from "../questions.js";
-import quizComplete from "../assets/quiz-complete.png";
+import Summary from "./Summary.jsx";
 import Question from "./Question.jsx";
 
 export default function Quiz({}) {
@@ -33,13 +33,7 @@ export default function Quiz({}) {
   );
 
   if (quizIsComplete) {
-    console.log("User answers", userAnswers);
-    return (
-      <div id="summary">
-        <img src={quizComplete} alt="Quiz is complete" />
-        <h2>Quiz completed !</h2>
-      </div>
-    );
+    return <Summary userAnswers={userAnswers} />;
   }
 
   return (
