@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 
 export default function QuestionTimer({ timeOut, onTimeOut, mode }) {
-  // Set interval
+  // Set interval.
   const [remainingTime, setRemainingTime] = useState(timeOut);
   const intervalTime = timeOut * 0.05;
   useEffect(() => {
