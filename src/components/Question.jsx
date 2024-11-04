@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import QUESTIONS from "../questions.js";
 import Answers from "./Answers";
 import QuestionTimer from "./QuestionTimer";

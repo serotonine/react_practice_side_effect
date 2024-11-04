@@ -5,7 +5,7 @@ import Question from "./Question.jsx";
 
 export default function Quiz({}) {
   // Timeout value.
-  const _TIMEOUT = 10000;
+  const _TIMEOUT = 20000;
   // Stock answers.
   const [userAnswers, setUserAnswers] = useState([]);
   // Awful correct/wrong answer.
