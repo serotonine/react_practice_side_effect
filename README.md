@@ -1,8 +1,3 @@
-# REACT Practice Side Effect
-
-
-
-
 # REACT PRACTICE SIDE EFFECT (REACT QUIZZ)
 ### Repository
 [https://github.com/serotonine/react_practice_side_effect](https://github.com/serotonine/react_practice_side_effect)
